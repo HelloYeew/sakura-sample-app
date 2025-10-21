@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Sakura.Framework;
+using Sakura.Framework.Allocation;
 using Sakura.Framework.Graphics.Colors;
 using Sakura.Framework.Graphics.Drawables;
 using Sakura.Framework.Graphics.Primitives;
@@ -10,34 +9,43 @@ using Sakura.Framework.Extensions.ColorExtensions;
 using Sakura.Framework.Input;
 using Sakura.Framework.Logging;
 using Sakura.Framework.Maths;
+using Sakura.Framework.Platform;
 using Sakura.Framework.Reactive;
 
 namespace SampleApp;
 
 public class SampleApp : App
 {
-    private List<DummyBox> boxes = new List<DummyBox>();
-
-    private Box backgroundBox;
+    private readonly List<DummyBox> boxes = new List<DummyBox>();
 
     public override void Load()
     {
         base.Load();
-        Add(backgroundBox = new Box()
+        Add(new Box()
         {
-            Size = new Vector2(1,1),
-            Color = Color.OrangeRed,
+            Size = new Vector2(1),
+            Color = ColorExtensions.FromHex("FF66AA"),
             Anchor = Anchor.Centre,
             Origin = Anchor.Centre,
             RelativeSizeAxes = Axes.Both
         });
-        Add(new DummyBox(Color.PaleVioletRed)
+        Add(new Triangle()
         {
-            Size = new Vector2(0.2f, 0.2f),
-            Color = Color.PaleVioletRed,
+            Size = new Vector2(300, 300),
+            Color = Color.PaleVioletRed.Lighten(0.25f),
+            Anchor = Anchor.Centre,
+            Origin = Anchor.Centre
+        });
+        Add(new Line()
+        {
+            StartPoint = new Vector2(0, 0),
+            EndPoint = new Vector2(1, 1),
+            Thickness = 5,
+            Color = Color.White,
             Anchor = Anchor.Centre,
             Origin = Anchor.Centre,
             RelativeSizeAxes = Axes.Both,
+            RelativePositionAxes = Axes.Both,
         });
         Add(new Box()
         {
@@ -106,20 +114,6 @@ public class SampleApp : App
                 Bottom = 20
             }
         });
-
-        Task.Run(async () =>
-        {
-            while (true)
-            {
-                await Task.Delay(3000);
-                Color randomColor = ColorExtensions.FromRgb(
-                    (byte)Random.Shared.Next(0, 256),
-                    (byte)Random.Shared.Next(0, 256),
-                    (byte)Random.Shared.Next(0, 256)
-                );
-                backgroundBox.Color = randomColor;
-            }
-        }, CancellationToken.None);
     }
 
     public override bool OnMouseDown(MouseButtonEvent e)
@@ -184,6 +178,12 @@ public class DummyBox : Box
         clickCount.ValueChanged += count => Logger.LogPrint($"Box {id} clicked {count.NewValue} times!");
     }
 
+    [BackgroundDependencyLoader]
+    private void load(IWindow window)
+    {
+        Logger.LogPrint("Current window size: " + window.Width + "x" + window.Height);
+    }
+
     public override void Load()
     {
         Logger.Verbose($"Loading box {id} with color: {Color}");
@@ -226,7 +226,7 @@ public class DummyBox : Box
         if (RelativeSizeAxes == Axes.Both)
             Position += e.Delta;
         else
-            Position += e.Delta / Parent.ChildSize;
+            Position += e.Delta / Parent!.ChildSize;
 
         return true;
     }
@@ -241,5 +241,12 @@ public class DummyBox : Box
     {
         clickCount.Value = 0;
         return base.OnDoubleClick(e);
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        if (IsHovered) return;
+        Size += new Vector2(0.5f, 0.5f);
     }
 }
