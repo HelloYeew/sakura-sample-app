@@ -6,6 +6,8 @@ using Sakura.Framework.Graphics.Colors;
 using Sakura.Framework.Graphics.Drawables;
 using Sakura.Framework.Graphics.Primitives;
 using Sakura.Framework.Extensions.ColorExtensions;
+using Sakura.Framework.Extensions.DrawableExtensions;
+using Sakura.Framework.Graphics.Transforms;
 using Sakura.Framework.Input;
 using Sakura.Framework.Logging;
 using Sakura.Framework.Maths;
@@ -194,6 +196,12 @@ public class DummyBox : Box
     {
         Logger.Verbose($"Box loaded {id} with color: {Color}");
         base.LoadComplete();
+
+        this.RotateTo(0).Then()
+            .FlashColour(Color.White, 2000, EasingType.OutQuint)
+            .RotateTo(360, 2000, EasingType.OutQuint)
+            .ScaleTo(Random.Shared.NextSingle(), 2000, EasingType.OutQuint)
+            .Loop();
     }
 
     public override bool OnMouseDown(MouseButtonEvent e)
@@ -206,19 +214,6 @@ public class DummyBox : Box
     {
         Color = originalColor;
         return base.OnMouseUp(e);
-    }
-
-    public override bool OnHover(MouseEvent e)
-    {
-        Color = originalColor.Lighten(0.5f);
-        return base.OnHover(e);
-    }
-
-    public override bool OnHoverLost(MouseEvent e)
-    {
-        base.OnHoverLost(e);
-        Color = originalColor;
-        return true;
     }
 
     public override bool OnDrag(MouseEvent e)
@@ -241,12 +236,5 @@ public class DummyBox : Box
     {
         clickCount.Value = 0;
         return base.OnDoubleClick(e);
-    }
-
-    public override void Update()
-    {
-        base.Update();
-        if (IsHovered) return;
-        Size += new Vector2(0.5f, 0.5f);
     }
 }
