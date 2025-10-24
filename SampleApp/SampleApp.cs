@@ -198,9 +198,9 @@ public class DummyBox : Box
         base.LoadComplete();
 
         this.RotateTo(0).Then()
-            .FlashColour(Color.White, 2000, EasingType.OutQuint)
-            .RotateTo(360, 2000, EasingType.OutQuint)
-            .ScaleTo(Random.Shared.NextSingle(), 2000, EasingType.OutQuint)
+            .FlashColour(Color.White, 2000, Easing.OutQuint)
+            .RotateTo(360, 2000, Easing.OutQuint)
+            .ScaleTo(Random.Shared.NextSingle(), 2000, Easing.OutQuint)
             .Loop();
     }
 
