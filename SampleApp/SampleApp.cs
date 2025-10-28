@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Sakura.Framework;
 using Sakura.Framework.Allocation;
+using Sakura.Framework.Audio;
 using Sakura.Framework.Graphics.Colors;
 using Sakura.Framework.Graphics.Drawables;
 using Sakura.Framework.Graphics.Primitives;
@@ -19,10 +20,15 @@ namespace SampleApp;
 public class SampleApp : App
 {
     private readonly List<DummyBox> boxes = new List<DummyBox>();
+    private ITrack backgroundTrack;
+    private IAudioChannel backgroundTrackChannel;
+
+    protected override string ResourceRootNamespace => "SampleApp.Resources";
 
     public override void Load()
     {
         base.Load();
+        backgroundTrack = TrackStore.Get("audio.mp3");
         Add(new Box()
         {
             Size = new Vector2(1),
@@ -118,6 +124,14 @@ public class SampleApp : App
         });
     }
 
+    public override void LoadComplete()
+    {
+        backgroundTrack.RestartPoint = 119199;
+        backgroundTrackChannel = backgroundTrack.Play();
+        backgroundTrackChannel.Looping = true;
+        base.LoadComplete();
+    }
+
     public override bool OnMouseDown(MouseButtonEvent e)
     {
         if (e.Button != MouseButton.Right) return base.OnMouseDown(e);
@@ -171,6 +185,7 @@ public class DummyBox : Box
     private Color originalColor;
     private ReactiveInt clickCount;
     private Guid id = Guid.NewGuid();
+    private ISample hoverSample;
 
     public DummyBox(Color color)
     {
@@ -181,9 +196,10 @@ public class DummyBox : Box
     }
 
     [BackgroundDependencyLoader]
-    private void load(IWindow window)
+    private void load(IWindow window, IAudioStore<ISample> sampleStore)
     {
         Logger.LogPrint("Current window size: " + window.Width + "x" + window.Height);
+        hoverSample = sampleStore.Get("hover.wav");
     }
 
     public override void Load()
@@ -197,10 +213,12 @@ public class DummyBox : Box
         Logger.Verbose($"Box loaded {id} with color: {Color}");
         base.LoadComplete();
 
+        double everythingGoesOnTransformDuration = 60000 / 157;
+
         this.RotateTo(0).Then()
-            .FlashColour(Color.White, 2000, Easing.OutQuint)
-            .RotateTo(360, 2000, Easing.OutQuint)
-            .ScaleTo(Random.Shared.NextSingle(), 2000, Easing.OutQuint)
+            .FlashColour(originalColor.Lighten(0.8f), everythingGoesOnTransformDuration, Easing.OutCubic)
+            .RotateTo(360, everythingGoesOnTransformDuration, Easing.OutCubic)
+            .ScaleTo(0.7f, everythingGoesOnTransformDuration, Easing.OutCubic)
             .Loop();
     }
 
@@ -236,5 +254,11 @@ public class DummyBox : Box
     {
         clickCount.Value = 0;
         return base.OnDoubleClick(e);
+    }
+
+    public override bool OnHover(MouseEvent e)
+    {
+        hoverSample.Play();
+        return base.OnHover(e);
     }
 }
