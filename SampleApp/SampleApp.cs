@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Sakura.Framework;
 using Sakura.Framework.Allocation;
 using Sakura.Framework.Audio;
+using Sakura.Framework.Configurations;
 using Sakura.Framework.Graphics.Colors;
 using Sakura.Framework.Graphics.Drawables;
 using Sakura.Framework.Graphics.Primitives;
@@ -23,12 +24,20 @@ public class SampleApp : App
     private ITrack backgroundTrack;
     private IAudioChannel backgroundTrackChannel;
 
+    private Box volumeUpBox;
+    private Box volumeDownBox;
+
+    private Reactive<double> masterVolume;
+
     protected override string ResourceRootNamespace => "SampleApp.Resources";
 
     public override void Load()
     {
         base.Load();
         backgroundTrack = TrackStore.Get("audio.mp3");
+
+        masterVolume = Host.FrameworkConfigManager.Get<double>(FrameworkSetting.MasterVolume);
+
         Add(new Box()
         {
             Size = new Vector2(1),
@@ -55,10 +64,10 @@ public class SampleApp : App
             RelativeSizeAxes = Axes.Both,
             RelativePositionAxes = Axes.Both,
         });
-        Add(new Box()
+        Add(volumeUpBox = new Box()
         {
             Size = new Vector2(100, 100),
-            Color = Color.AliceBlue,
+            Color = Color.Green,
             Anchor = Anchor.CentreLeft,
             Origin = Anchor.CentreLeft,
             Margin = new MarginPadding()
@@ -66,22 +75,10 @@ public class SampleApp : App
                 Left = 20
             }
         });
-        Add(new Box()
-        {
-            Size = new Vector2(300, 200),
-            Color = Color.MediumSpringGreen,
-            Anchor = Anchor.CentreRight,
-            Origin = Anchor.CentreRight,
-            Depth = -100,
-            Margin = new MarginPadding()
-            {
-                Right = 20
-            }
-        });
-        Add(new Box()
+        Add(volumeDownBox = new Box()
         {
             Size = new Vector2(100, 100),
-            Color = Color.LawnGreen,
+            Color = Color.Red,
             Anchor = Anchor.CentreRight,
             Origin = Anchor.CentreRight,
             Margin = new MarginPadding()
@@ -167,6 +164,18 @@ public class SampleApp : App
 
     public override bool OnKeyDown(KeyEvent e)
     {
+        if (e.Key == Key.Up && IsLoaded)
+        {
+            masterVolume.Value = Math.Min(1.0, masterVolume.Value + 0.05);
+            volumeUpBox.FlashColour(Color.White, 100, Easing.OutCubic);
+        }
+
+        if (e.Key == Key.Down && IsLoaded)
+        {
+            masterVolume.Value = Math.Max(0.0, masterVolume.Value - 0.05);
+            volumeDownBox.FlashColour(Color.White, 100, Easing.OutCubic);
+        }
+
         foreach (var box in boxes)
         {
             if (box.IsHovered && e.Key == Key.BackSpace)
