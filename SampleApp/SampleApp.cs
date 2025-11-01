@@ -119,6 +119,47 @@ public class SampleApp : App
                 Bottom = 20
             }
         });
+
+        Add(new Container()
+        {
+            Size = new Vector2(200, 200),
+            Anchor = Anchor.Centre,
+            Origin = Anchor.Centre,
+            Masking = true,
+            CornerRadius = 25,
+            Child = new Box()
+            {
+                Anchor = Anchor.Centre,
+                Origin = Anchor.Centre,
+                RelativeSizeAxes = Axes.Both,
+                Color = Color.Red,
+                Size = new Vector2(1),
+                Depth = int.MaxValue
+            }
+        });
+
+        Add(new Container()
+        {
+            Size = new Vector2(100, 100),
+            Anchor = Anchor.TopRight,
+            Origin = Anchor.TopRight,
+            Masking = true,
+            CornerRadius = 5,
+            Children = new Drawable[]
+            {
+                new Box()
+                {
+                    Size = new Vector2(50, 50),
+                    Color = Color.OrangeRed
+                },
+                new Triangle()
+                {
+                    Size = new Vector2(50, 50),
+                    Color = Color.Yellow,
+                    Position = new Vector2(25, 25)
+                }
+            }
+        });
     }
 
     public override void LoadComplete()
