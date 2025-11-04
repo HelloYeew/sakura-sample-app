@@ -120,6 +120,19 @@ public class SampleApp : App
             }
         });
 
+        Add(new Circle()
+        {
+            Size = new Vector2(150, 150),
+            Color = Color.MediumPurple,
+            Anchor = Anchor.TopLeft,
+            Origin = Anchor.TopLeft,
+            Margin = new MarginPadding()
+            {
+                Top = 20,
+                Left = 20
+            }
+        });
+
         Add(new Container()
         {
             Size = new Vector2(200, 200),
@@ -134,7 +147,6 @@ public class SampleApp : App
                 RelativeSizeAxes = Axes.Both,
                 Color = Color.Red,
                 Size = new Vector2(1),
-                Depth = int.MaxValue
             }
         });
 
@@ -156,6 +168,14 @@ public class SampleApp : App
                 {
                     Size = new Vector2(50, 50),
                     Color = Color.Yellow,
+                    Position = new Vector2(25, 25)
+                },
+                new Circle()
+                {
+                    Size = new Vector2(50, 50),
+                    Color = Color.PeachPuff,
+                    Anchor = Anchor.BottomLeft,
+                    Origin = Anchor.BottomLeft,
                     Position = new Vector2(25, 25)
                 }
             }
