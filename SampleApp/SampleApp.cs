@@ -46,6 +46,15 @@ public class SampleApp : App
             Origin = Anchor.Centre,
             RelativeSizeAxes = Axes.Both
         });
+
+        Add(new Sprite()
+        {
+            Anchor = Anchor.Centre,
+            Origin = Anchor.Centre,
+            Texture = TextureManager.Get("hdr.jpg"),
+            Size = new Vector2(0.4f),
+            RelativeSizeAxes = Axes.Both
+        });
         Add(new Triangle()
         {
             Size = new Vector2(300, 300),
@@ -133,6 +142,18 @@ public class SampleApp : App
             }
         });
 
+        Add(new Sprite()
+        {
+            Size = new Vector2(0.25f),
+            RelativeSizeAxes = Axes.Both,
+            Anchor = Anchor.BottomRight,
+            Origin = Anchor.BottomRight,
+            Texture = TextureManager.Get("test.png"),
+            Margin = new MarginPadding(20)
+        }.RotateTo(45, 2000, Easing.OutCubic)
+            .RotateTo(0, 2000, Easing.OutCubic)
+            .Loop());
+
         Add(new Container()
         {
             Size = new Vector2(200, 200),
@@ -140,13 +161,13 @@ public class SampleApp : App
             Origin = Anchor.Centre,
             Masking = true,
             CornerRadius = 25,
-            Child = new Box()
+            Child = new Sprite()
             {
-                Anchor = Anchor.Centre,
-                Origin = Anchor.Centre,
-                RelativeSizeAxes = Axes.Both,
-                Color = Color.Red,
                 Size = new Vector2(1),
+                RelativeSizeAxes = Axes.Both,
+                Anchor = Anchor.BottomRight,
+                Origin = Anchor.BottomRight,
+                Texture = TextureManager.Get("test.png"),
             }
         });
 
